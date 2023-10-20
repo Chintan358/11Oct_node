@@ -6,7 +6,23 @@ router.get("/students", async (req, resp) => {
 
     try {
         const data = await Student.find();
-        resp.send(data)
+
+        var mydata = [];
+        var count = 0;
+        for (var i = 0; i < data.length; i++) {
+            const dt = {
+                name: data[i].name,
+                email: data[i].email,
+                pass: data[i].pass,
+                date: new Date(data[i].date).toLocaleDateString(),
+                Time: new Date(data[i].date).toLocaleTimeString()
+            }
+            mydata[count] = dt;
+            count++;
+        }
+
+
+        resp.send(mydata)
     } catch (error) {
         resp.send(error)
     }
@@ -15,7 +31,7 @@ router.get("/students", async (req, resp) => {
 
 router.post("/students", async (req, resp) => {
 
-    const data = req.body
+    const data = { name: req.body.name, email: req.body.email, pass: req.body.pass, date: Date.now() }
     try {
         const std = new Student(data)
         const result = await std.save()
