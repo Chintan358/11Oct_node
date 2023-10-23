@@ -6,15 +6,17 @@ const DBURL = process.env.DBURL
 app.use(express.json())
 const mongoose = require("mongoose")
 
-mongoose.connect(DBURL).then(data=>{
+mongoose.connect(DBURL).then(data => {
     console.log("Connected !!!!!");
-}).catch(err=>{
+}).catch(err => {
     console.log(err);
 })
 
 
-app.use("/users",require("../router/userrouter"))
+app.use("/users", require("../router/userrouter"))
+app.use("/categories", require("../router/categoryrouter"))
+app.use("/products", require("../router/productrouter"))
 
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`);
 })
