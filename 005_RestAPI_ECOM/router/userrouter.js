@@ -37,11 +37,12 @@ router.post("/", async (req, resp) => {
 })
 
 
-router.put("/:id",auth, async (req, resp) => {
+router.put("/", auth, async (req, resp) => {
     const id = req.params.id
-    
+    const cuurentUser = req.userdata;
+   
     try {
-        const data = await User.findByIdAndUpdate(id, req.body)
+        const data = await User.findByIdAndUpdate(cuurentUser._id, req.body)
         resp.send(data)
     } catch (error) {
         resp.send(error)
