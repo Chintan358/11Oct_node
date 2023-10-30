@@ -49,17 +49,17 @@
         <div class="row px-xl-5">
             <div class="col-lg-7 mb-5 m-auto">
                 <div class="contact-form">
-                    <div id="success"></div>
-                    <form name="sentMessage" id="contactForm" novalidate="novalidate">
+                    <div id="success" class="text-danger">{{err}}</div>
+                    <form action="ulogin" method="post">
                        
                         <div class="control-group">
                             <input type="email" class="form-control" id="email" placeholder="Your Email"
-                                required="required" data-validation-required-message="Please enter your email" />
+                                name="email" />
                             <p class="help-block text-danger"></p>
                         </div>
                         <div class="control-group">
                             <input type="password" class="form-control" id="subject" placeholder="Enter password"
-                                required="required" data-validation-required-message="Please enter a Password" />
+                               name="pass" />
                             <p class="help-block text-danger"></p>
                         </div>
 
