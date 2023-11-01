@@ -246,15 +246,40 @@
               <div class="col-md-6 grid-margin stretch-card m-auto">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Product Category</h4>
+                    <h4 class="card-title">Products</h4>
                     <span class="text-danger">{{msg}}</span>
-                    <form class="forms-sample" action="addcategory" method="post">
-                      <div class="form-group">
+                    <form class="forms-sample" action="addproduct" method="post" enctype="multipart/form-data">
+
+                      <div class="form-group" >
                         <label for="exampleInputUsername1">Category Name</label>
-                        <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Category" name="catname">
+
+                        <select name="catname" id="" class="form-control">
+                           {{#each cats}}
+                           <option value={{this._id}}>{{this.catname}}</option>
+                           {{/each}}
+                           </select>
+                        
+                      </div>
+
+                      <div class="form-group">
+                        <label for="exampleInputUsername1">Product Name</label>
+                        <input type="text" class="form-control"  placeholder="product name" name="pname">
                       </div>
                       
-                     
+                       <div class="form-group">
+                        <label for="exampleInputUsername1">Product Price</label>
+                        <input type="text" class="form-control"  placeholder="product name" name="price">
+                      </div>
+
+                       <div class="form-group">
+                        <label for="exampleInputUsername1">Product Qty</label>
+                        <input type="text" class="form-control"  placeholder="product name" name="qty">
+                      </div>
+
+                      <div class="form-group">
+                        <label for="exampleInputUsername1">Product Image</label>
+                        <input type="file" class="form-control"  placeholder="product Image" name="img">
+                      </div>
                       
                       
                       <button type="submit" class="btn btn-primary me-2">Submit</button>
@@ -280,15 +305,23 @@
                         <thead>
                           <tr>
                             <th> Category Name </th>
+                            <th>Product name</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>image</th>
                             <th> Action </th> 
                           </tr>
                         </thead>
                         <tbody>
                          
-                         {{#each catdata}}
+                         {{#each prod}}
                           <tr>
-                            <td> {{this.catname}}</td>
-                           <td><a class="btn btn-danger">Delete</a></td>
+                            <td> {{this.catid}}</td>
+                            <td> {{this.pname}}</td>
+                            <td> {{this.price}}</td>
+                            <td> {{this.qty}}</td>
+                            <td> <img src="productimg/{{this.img}}" alt="{{this.img}}"></td>
+                           <td><a href="deleteProduct?did={{this._id}}" class="btn btn-danger">Delete</a></td>
                             <td><a class="btn btn-primary">Edit</a></td> 
                           </tr>
                          {{/each}}

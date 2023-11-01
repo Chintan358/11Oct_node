@@ -1,8 +1,16 @@
 const route = require("express").Router()
 const auth = require("../middleware/auth")
+const Category = require("../model/categories")
+const Product = require("../model/products")
+route.get("/", async (req, resp) => {
+    try {
+        const cat = await Category.find();
+        const prod = await Product.find();
+        resp.render("index", { catdata: cat ,prod:prod})
+    } catch (error) {
 
-route.get("/", (req, resp) => {
-    resp.render("index")
+    }
+
 })
 route.get("/shop", (req, resp) => {
     resp.render("shop")

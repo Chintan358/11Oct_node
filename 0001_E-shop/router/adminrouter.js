@@ -10,14 +10,6 @@ route.get("/adminhome", aauth, (req, resp) => {
     resp.render("adminhome")
 })
 
-route.get("/categories", aauth, async (req, resp) => {
-    try {
-        resp.render("category")
-    } catch (error) {
-
-    }
-})
-
 route.post("/alogin", async (req, resp) => {
     try {
         const admin = await Admin.findOne({ username: req.body.username })
@@ -35,6 +27,91 @@ route.post("/alogin", async (req, resp) => {
     } catch (error) {
         resp.render("adminlogin", { "err": "Invalid credentials" })
     }
+})
+
+
+
+//*******************category************** */
+const Category = require("../model/categories")
+route.get("/categories", aauth, async (req, resp) => {
+    try {
+
+        const data = await Category.find();
+        resp.render("category", { catdata: data })
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+route.post("/addcategory", async (req, resp) => {
+    try {
+        const cat = new Category(req.body)
+        await cat.save()
+        resp.redirect("categories")
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+//****************products************* */
+const Product = require("../model/products")
+const multer = require("multer")
+const fs = require("fs")
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "./public/productimg")
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + "-" + file.originalname)
+    },
+})
+
+const uploadStorage = multer({ storage: storage })
+
+
+
+
+route.get("/products", async (req, resp) => {
+    try {
+
+        const data = await Category.find();
+        const pdata = await Product.find();
+        resp.render("product", { cats: data, prod: pdata })
+    } catch (error) {
+
+    }
+})
+
+
+route.post("/addproduct", uploadStorage.single("img"), async (req, resp) => {
+    try {
+        const prod = new Product({
+            catid: req.body.catname,
+            pname: req.body.pname,
+            price: req.body.price,
+            qty: req.body.qty,
+            img: req.file.filename
+        })
+
+        await prod.save();
+        resp.redirect("products")
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+route.get("/deleteProduct", async (req, resp) => {
+
+    const id = req.query.did
+    try {
+        const data = await Product.findByIdAndDelete(id);
+        fs.unlinkSync("./public/productimg/" + data.img)
+        resp.redirect("products")
+    } catch (error) {
+        console.log(error);
+    }
+
 })
 
 
