@@ -6,7 +6,20 @@ route.get("/", async (req, resp) => {
     try {
         const cat = await Category.find();
         const prod = await Product.find();
-        resp.render("index", { catdata: cat ,prod:prod})
+
+        resp.render("index", { catdata: cat, prod: prod })
+    } catch (error) {
+
+    }
+
+})
+
+route.get("/home", auth, async (req, resp) => {
+    try {
+        const cat = await Category.find();
+        const prod = await Product.find();
+        const cart = await Cart.find({ uid: req.user._id })
+        resp.render("index", { catdata: cat, prod: prod, totalproduct: cart.length })
     } catch (error) {
 
     }
@@ -20,9 +33,7 @@ route.get("/detail", (req, resp) => {
     resp.render("detail")
 })
 
-route.get("/cart", auth, (req, resp) => {
-    resp.render("cart")
-})
+
 
 route.get("/contact", (req, resp) => {
     resp.render("contact")
@@ -63,7 +74,7 @@ route.post("/ulogin", async (req, resp) => {
 
             const token = await user.generateToken()
             resp.cookie("jwt", token)
-            resp.render("index")
+            resp.redirect("home")
         }
         else {
             resp.render("login", { "err": "Invalid credentials" })
@@ -75,8 +86,49 @@ route.post("/ulogin", async (req, resp) => {
     }
 })
 
+//**************cart**************** */
+const Cart = require("../model/carts")
+route.get("/addtocart", auth, async (req, resp) => {
+    try {
+
+        const pid = req.query.pid
+        const uid = req.user._id
+        const prod = await Product.findOne({ _id: pid })
+        const cart = new Cart({ pid: pid, uid: uid, qty: 1, total: prod.price })
+        const cdata = await cart.save()
+        console.log(cdata);
+        resp.send("Product added into cart")
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+route.get("/cart", auth, async (req, resp) => {
+
+    try {
+
+        const cdata = await Cart.aggregate([{ $match: { uid: req.user._id } }, {
+            $lookup: {
+                from: "products",
+                localField: "pid",
+                foreignField: "_id",
+                as: "product"
+            }
+        }])
+
+        var total = 0;
+        for (var i = 0; i < cdata.length; i++) {
+            total = total + cdata[i].total
+        }
 
 
 
 
+        resp.render("cart", { cdata: cdata, total: total, totalproduct: cdata.length })
+
+    } catch (error) {
+        console.log(error);
+    }
+
+})
 module.exports = route

@@ -85,20 +85,36 @@ route.get("/products", async (req, resp) => {
 
 
 route.post("/addproduct", uploadStorage.single("img"), async (req, resp) => {
-    try {
-        const prod = new Product({
-            catid: req.body.catname,
-            pname: req.body.pname,
-            price: req.body.price,
-            qty: req.body.qty,
-            img: req.file.filename
-        })
 
-        await prod.save();
+    const id = req.body.id
+    try {
+
+        if (id == "") {
+            const prod = new Product({
+                catid: req.body.catname,
+                pname: req.body.pname,
+                price: req.body.price,
+                qty: req.body.qty,
+                img: req.file.filename
+            })
+            await prod.save();
+        }
+        else {
+            const udata = await Product.findByIdAndUpdate(id, {
+                catid: req.body.catname,
+                pname: req.body.pname,
+                price: req.body.price,
+                qty: req.body.qty,
+                img: req.file.filename
+            })
+            fs.unlinkSync("./public/productimg/" + udata.img)
+        }
+
         resp.redirect("products")
     } catch (error) {
         console.log(error);
     }
+
 })
 
 route.get("/deleteProduct", async (req, resp) => {
@@ -114,5 +130,16 @@ route.get("/deleteProduct", async (req, resp) => {
 
 })
 
+route.get("/editProduct", async (req, resp) => {
+    try {
+        const _id = req.query.eid;
+        const prod = await Product.findOne({ _id: _id })
+        const data = await Category.find();
+        const pdata = await Product.find();
+        resp.render("product", { cats: data, prod: pdata, cprod: prod })
+    } catch (error) {
+
+    }
+})
 
 module.exports = route
