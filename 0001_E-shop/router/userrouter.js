@@ -88,6 +88,7 @@ route.post("/ulogin", async (req, resp) => {
 
 //**************cart**************** */
 const Cart = require("../model/carts")
+const products = require("../model/products")
 route.get("/addtocart", auth, async (req, resp) => {
     try {
 
@@ -130,5 +131,40 @@ route.get("/cart", auth, async (req, resp) => {
         console.log(error);
     }
 
+})
+
+route.get("/removeCart", async (req, resp) => {
+    try {
+        const id = req.query.cartid
+        const data = await Cart.findByIdAndDelete(id);
+        resp.send("product deleted")
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+route.get("/changeQty", async (req, resp) => {
+    try {
+        const cartid = req.query.cartid
+        const qty = req.query.qty
+
+        const cartdata = await Cart.findOne({ _id: cartid })
+        const pdata = await Product.findOne({ _id: cartdata.pid })
+
+        const q = cartdata.qty + Number(qty);
+        if (q < 0) {
+
+        }
+        else {
+            const total = q * pdata.price;
+
+            const data = await Cart.findByIdAndUpdate(cartid, { qty: q, total: total })
+
+            console.log(data);
+        }
+        resp.send("updated")
+    } catch (error) {
+        console.log(error);
+    }
 })
 module.exports = route
