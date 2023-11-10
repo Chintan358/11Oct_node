@@ -8,7 +8,8 @@ const mongoose = require("mongoose");
 const DBURL = process.env.DBURL
 const bodyParser = require("body-parser")
 const cookieParser = require("cookie-parser");
-
+const cors = require("cors")
+app.use(cors())
 app.use(bodyParser())
 app.use(cookieParser())
 mongoose.connect(DBURL).then(result => {
