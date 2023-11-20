@@ -142,4 +142,46 @@ route.get("/editProduct", async (req, resp) => {
     }
 })
 
+//**************order************** */
+const Order = require("../model/orders")
+const User = require("../model/users")
+route.get("/orderdetail", async (req, resp) => {
+    try {
+
+
+        var pdataarray = [];
+        var orderdataarry = [];
+        const allorder = await Order.find();
+        for (var i = 0; i < allorder.length; i++) {
+            const userdata = await User.findOne({ _id: allorder[i].uid })
+            var pdataarray = [];
+            for (var j = 0; j < allorder[i].product.length; j++) {
+                const pdata = await Product.findOne({ _id: allorder[i].product[j].pid })
+                const qty = allorder[i].product[j].qty
+
+                pdataarray[j] = {
+                    pname: pdata.pname,
+                    price: pdata.price,
+                    qty: qty,
+                    total: qty * pdata.price
+                }
+            }
+
+            orderdataarry[i] = {
+                uname: userdata.username,
+                email: userdata.email,
+                productInfo: pdataarray
+            }
+        }
+
+        //resp.send(orderdataarry)
+        resp.render("order", { odata: orderdataarry })
+
+    } catch (error) {
+
+    }
+})
+
+
+
 module.exports = route

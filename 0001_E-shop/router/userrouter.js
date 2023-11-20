@@ -174,7 +174,7 @@ const Razorpay = require("razorpay")
 route.get("/payment", (req, resp) => {
 
     const amt = Number(req.query.amt);
-    console.log(amt);
+
     var instance = new Razorpay({
         key_id: 'rzp_test_d9JbS1BeWue9U8',
         key_secret: 'AFZZpaM2Cv5SZ4jbVvA1waRj'
@@ -195,4 +195,37 @@ route.get("/payment", (req, resp) => {
     });
 
 })
+//************************order**** */
+const Order = require("../model/orders")
+
+route.get("/order", auth, async (req, resp) => {
+    const payid = req.query.payid
+    const user = req.user
+    try {
+
+        const carts = await Cart.find({ uid: user._id })
+
+        var product = [];
+        for (var i = 0; i < carts.length; i++) {
+            product[i] = {
+                pid: carts[i].pid,
+                qty: carts[i].qty
+            }
+        }
+
+        const order = new Order({ uid: user._id, payid: payid, product: product })
+        await order.save()
+
+        await Cart.deleteMany({ uid: user._id });
+
+        resp.send("order confirmed !!!")
+
+
+    } catch (error) {
+
+    }
+})
+
+
+
 module.exports = route
