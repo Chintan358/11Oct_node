@@ -2,6 +2,7 @@ const route = require("express").Router()
 const auth = require("../middleware/auth")
 const Category = require("../model/categories")
 const Product = require("../model/products")
+var nodemailer = require('nodemailer');
 route.get("/", async (req, resp) => {
     try {
         const cat = await Category.find();
@@ -199,6 +200,16 @@ route.get("/payment", (req, resp) => {
 const Order = require("../model/orders")
 
 route.get("/order", auth, async (req, resp) => {
+
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'chintan.tops@gmail.com',
+            pass: 'jdhw afvt pdzu ixuq'
+        }
+    });
+
+
     const payid = req.query.payid
     const user = req.user
     try {
@@ -214,9 +225,43 @@ route.get("/order", auth, async (req, resp) => {
         }
 
         const order = new Order({ uid: user._id, payid: payid, product: product })
-        await order.save()
+        const allorder = await order.save()
 
         await Cart.deleteMany({ uid: user._id });
+
+        //const allorder = await Order.find();
+
+        var row = "";
+        var pdataarray = [];
+        for (var j = 0; j < allorder.product.length; j++) {
+            const pdata = await Product.findOne({ _id: allorder.product[j].pid })
+            const qty = allorder.product[j].qty
+
+            row = row + `<tr><td>${pdata.pname}</td><td>${pdata.price}</td><td>${qty}</td><td>${qty * pdata.price}</td></tr>`;
+        }
+
+
+
+
+
+
+
+
+        var mailOptions = {
+            from: 'chintan.tops@gmail.com',
+            to: user.email,
+            subject: 'Order Conformation',
+            html: "<table class='table' border='1'><thead><tr><th>product name</th><th>price</th><th>qty</th><th>total</th></tr></thead><tbody>" + row + "</tbody></table>"
+        };
+
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
 
         resp.send("order confirmed !!!")
 

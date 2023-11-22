@@ -149,7 +149,7 @@ route.get("/orderdetail", async (req, resp) => {
     try {
 
 
-        var pdataarray = [];
+
         var orderdataarry = [];
         const allorder = await Order.find();
         for (var i = 0; i < allorder.length; i++) {

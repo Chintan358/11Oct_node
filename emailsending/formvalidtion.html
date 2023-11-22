@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+
+        function validation() {
+
+            var uname = document.getElementById("uname").value
+            var email = document.getElementById("email").value
+
+            var unameErr = document.getElementById("unameErr")
+            var emailErr = document.getElementById("emailErr")
+
+            var emailexp = /^[a-z0-9]+@[a-z]+\.[a-z]{2,3}$/
+
+            if (uname == null || uname == "") {
+                unameErr.innerHTML = "Username Required !!"
+            }
+            else {
+                unameErr.innerHTML = "";
+            }
+
+            if (email == null || email == "") {
+                emailErr.innerHTML = "email Required !!"
+            }
+            else if (!emailexp.test(email)) {
+                emailErr.innerHTML = "Invalid email"
+            }
+            else {
+                emailErr.innerHTML = ""
+            }
+
+        }
+
+    </script>
+</head>
+
+<body>
+
+    <form action="">
+        <label for="uname">Username</label>
+        <input type="text" name="uname" id="uname" onkeyup="validation()">
+        <span id="unameErr" style="color: red;"></span>
+        <br>
+
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email" onkeyup="validation()">
+        <span id="emailErr" style="color: red;"></span><br>
+        <input type="submit">
+    </form>
+
+
+</body>
+
+</html>
